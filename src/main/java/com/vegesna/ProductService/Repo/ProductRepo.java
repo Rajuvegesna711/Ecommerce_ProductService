@@ -2,6 +2,8 @@ package com.vegesna.ProductService.Repo;
 
 import com.vegesna.ProductService.Models.Product;
 import com.vegesna.ProductService.Projection.productWithTitleAndDescription;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -30,4 +32,7 @@ public interface ProductRepo extends JpaRepository<Product,Long>{
         //SQL --> Structured Query Language
         @Query(value = "select p.title as Title, p.description as Description from Product p where p.Id=:id", nativeQuery = true)
         productWithTitleAndDescription titleAndDescriptionQuery1(@Param("id") Long id);
+
+        @Override
+        Page<Product> findAll(Pageable pageable);
 }

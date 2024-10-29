@@ -5,7 +5,11 @@ import com.vegesna.ProductService.Exception.productNotFound;
 import com.vegesna.ProductService.Models.Category;
 import com.vegesna.ProductService.Models.Product;
 import com.vegesna.ProductService.DTO.FakeStoreResponseDTO;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -18,21 +22,34 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Service("FakeStoreProductService")
 public class FakeStoreProductService implements productService{
 
     private RestTemplate restTemplate;
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
-    FakeStoreProductService(RestTemplate restTemplate){
+    FakeStoreProductService(RestTemplate restTemplate, RedisTemplate redisTemplate){
         this.restTemplate = restTemplate;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
     public Product getProductBYID(long id) throws URISyntaxException, productNotFound {
+
+        Product p = (Product)redisTemplate.opsForHash().get("PRODUCTS", "PRODUCT_"+id);
+        // Cache Hit
+        if(p!=null){
+            return p;
+        }
+
         URI uri = new URI("https://fakestoreapi.com/products/"+id);
         RequestEntity<?> requestEntity = new RequestEntity<>(HttpMethod.GET,uri);
        ResponseEntity<FakeStoreResponseDTO> responseEntity = restTemplate.exchange(requestEntity, FakeStoreResponseDTO.class);
         if(responseEntity!=null&&responseEntity.getStatusCode().equals(HttpStatus.OK)&&responseEntity.getBody()!=null){
+            //cache Miss.. So, storing in cache
+            redisTemplate.opsForHash().put("PRODUCTS", "PRODUCT_"+id, convertFakeStoreResponseDTOtoProduct(responseEntity.getBody()));
             return convertFakeStoreResponseDTOtoProduct(responseEntity.getBody());
         }
         if(responseEntity.getBody()==null){

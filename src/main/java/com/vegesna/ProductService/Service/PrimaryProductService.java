@@ -9,6 +9,7 @@ import com.vegesna.ProductService.Models.Product;
 import com.vegesna.ProductService.Repo.CategoryRepo;
 import com.vegesna.ProductService.Repo.ProductRepo;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.net.URISyntaxException;
@@ -16,8 +17,8 @@ import java.util.List;
 import java.util.Optional;
 
 
-@Primary
-@Service("PrimaryProductService")
+// @Primary
+// @Service("PrimaryProductService")
 public class PrimaryProductService implements productService{
 
     ProductRepo productRepo;
@@ -86,6 +87,7 @@ public class PrimaryProductService implements productService{
 
     @Override
     public List<Product> getAllProducts() throws URISyntaxException {
+        productRepo.findAll();
         return List.of();
     }
 }

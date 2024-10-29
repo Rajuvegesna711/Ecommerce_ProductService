@@ -6,6 +6,8 @@ import com.vegesna.ProductService.Exception.productNotFound;
 import com.vegesna.ProductService.Common.authCommon;
 import com.vegesna.ProductService.Models.Product;
 import com.vegesna.ProductService.Service.productService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,21 +17,22 @@ import java.util.List;
 @RestController
 @RequestMapping("/products")
 public class productController {
+    @Autowired
     private productService productService;
     private authCommon authCommon;
 
-    productController(@Qualifier("PrimaryProductService") productService productService, authCommon authCommon){
+    productController(@Qualifier("FakeStoreProductService") productService productService, authCommon authCommon){
         this.productService = productService;
         this.authCommon = authCommon;
     }
 
 
     @GetMapping("/{id}")
-    public Product getProductByID(@PathVariable long id, @RequestHeader("Auth") String auth) throws URISyntaxException, productNotFound, productIsEmpty {
-        if(authCommon.validate(auth)!=null){
+    public Product getProductByID(@PathVariable long id) throws URISyntaxException, productNotFound, productIsEmpty {
+        // if(authCommon.validate(auth)!=null){
             return productService.getProductBYID(id);
-        }
-        return null;
+        // }@RequestHeader("Auth") String auth
+        // return null;
     }
     @PostMapping("/")
     public Product createProduct(@RequestBody Product product) throws URISyntaxException, categoryNotFound, categoryIsEmpty {
