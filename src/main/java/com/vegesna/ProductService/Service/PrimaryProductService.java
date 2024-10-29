@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Optional;
 
 
-// @Primary
-// @Service("PrimaryProductService")
+
+@Service("PrimaryProductService")
 public class PrimaryProductService implements productService{
 
     ProductRepo productRepo;

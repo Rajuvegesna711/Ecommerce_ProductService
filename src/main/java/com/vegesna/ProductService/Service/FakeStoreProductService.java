@@ -22,7 +22,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Primary
 @Service("FakeStoreProductService")
 public class FakeStoreProductService implements productService{
 
